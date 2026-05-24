@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Terminal App</title>
     <style>
-        /* Basis- und Layout-Styles im dunklen Stil */
+        /* Basis- und Layout-Styles im dunklen, minimalistischen Stil */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -63,7 +63,7 @@
             transform: translateY(0);
         }
 
-        /* Screenshot-Sektion */
+        /* Sektion für die App-Vorschau */
         .screenshot-section {
             width: 100%;
             max-width: 800px;
@@ -77,118 +77,25 @@
             margin-bottom: 30px;
         }
 
-        /* Integriertes Terminal-Fenster */
-        .terminal-container {
+        /* Container für das statische Screenshot-Bild */
+        .screenshot-container {
             width: 100%;
-            height: 480px;
-            background-color: #1e1e2e;
-            border: 1px solid #45475a;
             border-radius: 12px;
+            overflow: hidden;
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
-            display: flex;
-            flex-direction: column;
-            padding: 15px;
-            text-align: left;
-        }
-
-        /* macOS Fenster-Leiste */
-        .top-bar {
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-            position: relative;
-        }
-
-        .dots {
-            display: flex;
-            gap: 8px;
-        }
-
-        .dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-        }
-
-        .dot.close { background-color: #f38ba8; }
-        .dot.minimize { background-color: #f9e2af; }
-        .dot.maximize { background-color: #a6e3a1; }
-
-        .window-title {
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 14px;
-            font-weight: bold;
-            font-family: 'Segoe UI', sans-serif;
-            color: #cdd6f4;
-            white-space: nowrap;
-        }
-
-        /* Verlauf-Anzeige mit modernem Scrollbalken */
-        .terminal-history {
-            flex: 1;
-            overflow-y: auto;
-            font-family: 'Fira Code', 'Consolas', monospace;
-            font-size: 15px;
-            line-height: 1.5;
-            color: #cdd6f4;
-            white-space: pre-wrap;
-            margin-bottom: 10px;
-            padding-right: 5px;
-        }
-
-        /* Modernes, abgerundetes Scrollbar-Design (Pill) */
-        .terminal-history::-webkit-scrollbar {
-            width: 8px;
-        }
-        .terminal-history::-webkit-scrollbar-track {
-            background: #1e1e2e;
-        }
-        .terminal-history::-webkit-scrollbar-thumb {
-            background-color: #585b70;
-            border-radius: 4px;
-        }
-        .terminal-history::-webkit-scrollbar-thumb:hover {
-            background-color: #cba6f7;
-        }
-
-        /* Eingabezeile */
-        .input-container {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .prompt-label {
-            font-family: 'Fira Code', monospace;
-            font-size: 16px;
-            color: #89b4fa;
-            user-select: none;
-        }
-
-        .input-line {
-            flex: 1;
+            border: 1px solid #222222;
             background-color: #11111b;
-            border: 1px solid #313244;
-            border-radius: 6px;
-            color: #f5e0dc;
-            font-family: 'Fira Code', 'Consolas', monospace;
-            font-size: 15px;
-            padding: 6px 10px;
-            outline: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
-        /* Farbhinterlegungen für Terminal-Ausgaben */
-        .c-loading { color: #89b4fa; }
-        .c-ok { color: #a6e3a1; }
-        .c-warn { color: #f9e2af; }
-        .c-started { color: #cba6f7; font-weight: bold; }
-        .c-options { color: #94e2d5; }
-        .c-select { color: #89dceb; }
-        .c-executing { color: #fab387; }
-        .c-user { color: #b4befe; }
-        .c-muted { color: #6c7086; }
+        .app-screenshot {
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: contain;
+        }
     </style>
 </head>
 <body>
@@ -201,63 +108,10 @@
     <main class="screenshot-section">
         <h2 class="section-title">App Screenshots</h2>
         
-        <div class="terminal-container" id="terminal">
-            <div class="top-bar">
-                <div class="dots">
-                    <div class="dot close"></div>
-                    <div class="dot minimize"></div>
-                    <div class="dot maximize"></div>
-                </div>
-                <div class="window-title">Gemini Core OS — user@catppuccin</div>
-            </div>
-
-            <div class="terminal-history" id="history">Gemini Core OS — user@catppuccin
---------------------------------------------------
-<span class="c-started">[SYSTEM ACTIVE]</span>
-<span class="c-options">[ options ]</span>
-1. brain stop
-2. brain stop
-3. cant sleep
-4. cant breath
-5. cant stand up
-
-<span class="c-select">[ SELECT 1-5 ]</span></div>
-
-            <div class="input-container">
-                <span class="prompt-label">❯</span>
-                <input type="text" class="input-line" id="inputLine" autocomplete="off" spellcheck="false" autofocus>
-            </div>
+        <div class="screenshot-container">
+            <img src="screenshot.png" alt="App Screenshot" class="app-screenshot">
         </div>
     </main>
-
-    <script>
-        const history = document.getElementById('history');
-        const inputLine = document.getElementById('inputLine');
-
-        const symptoms = {
-            "1": "brain stop", "2": "brain stop", "3": "cant sleep", "4": "cant breath", "5": "cant stand up"
-        };
-
-        inputLine.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') {
-                const input = inputLine.value.trim();
-                inputLine.value = "";
-                if (!input) return;
-
-                history.innerHTML += `\n<span class="c-user">❯ ${input}</span>`;
-
-                if (symptoms[input]) {
-                    history.innerHTML += `\n\n<span class="c-executing">[EXECUTING]</span> Processing choice: ${symptoms[input]}...\n<span class="c-ok">[OK]</span> Action logged successfully.`;
-                } else {
-                    history.innerHTML += `\n<span class="c-warn">[INFO]</span> Command received. Enter 1-5 to select options.`;
-                }
-                
-                history.scrollTop = history.scrollHeight;
-            }
-        });
-
-        document.getElementById('terminal').addEventListener('click', () => inputLine.focus());
-    </script>
 
 </body>
 </html>
