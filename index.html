@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dynamic AI Terminal</title>
+    <title>Terminal App</title>
     <style>
-        /* Base / Reset Styles */
+        /* Basis- und Layout-Styles im dunklen Stil */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -13,32 +13,85 @@
         }
 
         body {
-            background-color: #0c0c0c;
-            font-family: 'Fira Code', 'Consolas', monospace;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
-            overflow: hidden;
-        }
-
-        /* START STATE: Completely black background, dim borders */
-        .terminal-container {
-            width: 100%;
-            max-width: 750px;
-            height: 500px;
-            background-color: #000000;
-            border: 1px solid #222222;
-            border-radius: 12px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+            background-color: #0b0b0b;
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             display: flex;
             flex-direction: column;
-            padding: 15px 15px 15px 15px;
-            transition: background-color 0.5s ease, border-color 0.5s ease;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
+            padding: 60px 20px;
+            overflow-x: hidden;
         }
 
-        /* --- macOS Style Top Bar --- */
+        /* Haupt-Header-Bereich */
+        .hero-section {
+            text-align: center;
+            margin-bottom: 60px;
+            max-width: 600px;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 24px;
+            letter-spacing: -0.03em;
+        }
+
+        /* Grüner Installations-Button */
+        .install-btn {
+            display: inline-block;
+            background-color: #22c55e;
+            color: #ffffff;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-decoration: none;
+            padding: 14px 48px;
+            border-radius: 30px;
+            box-shadow: 0 4px 20px rgba(34, 197, 94, 0.3);
+            transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .install-btn:hover {
+            background-color: #16a34a;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(34, 197, 94, 0.4);
+        }
+
+        .install-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Screenshot-Sektion */
+        .screenshot-section {
+            width: 100%;
+            max-width: 800px;
+            text-align: center;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #888888;
+            margin-bottom: 30px;
+        }
+
+        /* Integriertes Terminal-Fenster */
+        .terminal-container {
+            width: 100%;
+            height: 480px;
+            background-color: #1e1e2e;
+            border: 1px solid #45475a;
+            border-radius: 12px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            padding: 15px;
+            text-align: left;
+        }
+
+        /* macOS Fenster-Leiste */
         .top-bar {
             display: flex;
             align-items: center;
@@ -55,9 +108,11 @@
             width: 12px;
             height: 12px;
             border-radius: 50%;
-            background-color: #333333; /* Start state: grayed out */
-            transition: background-color 0.5s ease;
         }
+
+        .dot.close { background-color: #f38ba8; }
+        .dot.minimize { background-color: #f9e2af; }
+        .dot.maximize { background-color: #a6e3a1; }
 
         .window-title {
             position: absolute;
@@ -65,37 +120,40 @@
             transform: translateX(-50%);
             font-size: 14px;
             font-weight: bold;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: #555555; /* Start state: dim text */
+            font-family: 'Segoe UI', sans-serif;
+            color: #cdd6f4;
             white-space: nowrap;
-            transition: color 0.5s ease;
         }
 
-        /* --- Terminal Display --- */
+        /* Verlauf-Anzeige mit modernem Scrollbalken */
         .terminal-history {
             flex: 1;
             overflow-y: auto;
+            font-family: 'Fira Code', 'Consolas', monospace;
             font-size: 15px;
             line-height: 1.5;
-            color: #ffffff; /* Start state: pure white */
+            color: #cdd6f4;
             white-space: pre-wrap;
             margin-bottom: 10px;
             padding-right: 5px;
         }
 
-        /* START STATE SCROLLBAR (Black & Invisible) */
+        /* Modernes, abgerundetes Scrollbar-Design (Pill) */
         .terminal-history::-webkit-scrollbar {
-            width: 10px;
+            width: 8px;
         }
         .terminal-history::-webkit-scrollbar-track {
-            background: #000000;
+            background: #1e1e2e;
         }
         .terminal-history::-webkit-scrollbar-thumb {
-            background: #000000;
-            border-radius: 5px;
+            background-color: #585b70;
+            border-radius: 4px;
+        }
+        .terminal-history::-webkit-scrollbar-thumb:hover {
+            background-color: #cba6f7;
         }
 
-        /* --- Input Line --- */
+        /* Eingabezeile */
         .input-container {
             display: flex;
             align-items: center;
@@ -103,71 +161,25 @@
         }
 
         .prompt-label {
+            font-family: 'Fira Code', monospace;
             font-size: 16px;
-            color: #ffffff; /* Start state */
+            color: #89b4fa;
             user-select: none;
         }
 
         .input-line {
             flex: 1;
-            background-color: #050505;
-            border: 1px solid #222222;
+            background-color: #11111b;
+            border: 1px solid #313244;
             border-radius: 6px;
-            color: #ffffff;
-            font-family: inherit;
+            color: #f5e0dc;
+            font-family: 'Fira Code', 'Consolas', monospace;
             font-size: 15px;
             padding: 6px 10px;
             outline: none;
-            transition: background-color 0.5s ease, border-color 0.5s ease, color 0.5s ease;
         }
 
-        /* ========================================================== */
-        /* CATPPUCCIN MOCHA THEME TRANSITION (Activated by sys start) */
-        /* ========================================================== */
-        
-        .terminal-container.catppuccin {
-            background-color: #1e1e2e;
-            border-color: #45475a;
-        }
-
-        .terminal-container.catppuccin .dot.close { background-color: #f38ba8; }
-        .terminal-container.catppuccin .dot.minimize { background-color: #f9e2af; }
-        .terminal-container.catppuccin .dot.maximize { background-color: #a6e3a1; }
-
-        .terminal-container.catppuccin .window-title {
-            color: #cdd6f4;
-        }
-
-        .terminal-container.catppuccin .terminal-history {
-            color: #cdd6f4;
-        }
-
-        /* CATPPUCCIN THEME SCROLLBAR (Modern Pill-Design) */
-        .terminal-container.catppuccin .terminal-history::-webkit-scrollbar {
-            width: 8px;
-        }
-        .terminal-container.catppuccin .terminal-history::-webkit-scrollbar-track {
-            background: #1e1e2e;
-        }
-        .terminal-container.catppuccin .terminal-history::-webkit-scrollbar-thumb {
-            background-color: #585b70;
-            border-radius: 4px;
-        }
-        .terminal-container.catppuccin .terminal-history::-webkit-scrollbar-thumb:hover {
-            background-color: #cba6f7;
-        }
-
-        .terminal-container.catppuccin .prompt-label {
-            color: #89b4fa;
-        }
-
-        .terminal-container.catppuccin .input-line {
-            background-color: #11111b;
-            border-color: #313244;
-            color: #f5e0dc;
-        }
-
-        /* Color classes for responses */
+        /* Farbhinterlegungen für Terminal-Ausgaben */
         .c-loading { color: #89b4fa; }
         .c-ok { color: #a6e3a1; }
         .c-warn { color: #f9e2af; }
@@ -175,223 +187,77 @@
         .c-options { color: #94e2d5; }
         .c-select { color: #89dceb; }
         .c-executing { color: #fab387; }
-        .c-error { color: #f38ba8; }
         .c-user { color: #b4befe; }
         .c-muted { color: #6c7086; }
-        .c-magic { color: #cba6f7; }
     </style>
 </head>
 <body>
 
-    <div class="terminal-container" id="terminal">
-        <!-- Top macOS Bar -->
-        <div class="top-bar">
-            <div class="dots">
-                <div class="dot close"></div>
-                <div class="dot minimize"></div>
-                <div class="dot maximize"></div>
+    <header class="hero-section">
+        <h1 class="hero-title">Terminal</h1>
+        <a href="https://github.com/Shadowniko1/terminal/releases/download/terminal/terminal.zip" class="install-btn">INSTALL</a>
+    </header>
+
+    <main class="screenshot-section">
+        <h2 class="section-title">App Screenshots</h2>
+        
+        <div class="terminal-container" id="terminal">
+            <div class="top-bar">
+                <div class="dots">
+                    <div class="dot close"></div>
+                    <div class="dot minimize"></div>
+                    <div class="dot maximize"></div>
+                </div>
+                <div class="window-title">Gemini Core OS — user@catppuccin</div>
             </div>
-            <div class="window-title" id="windowTitle">Terminal — Offline</div>
-        </div>
 
-        <!-- Terminal History Display -->
-        <div class="terminal-history" id="history">UNBOOTED SYSTEM CORE // LOCAL HOST
+            <div class="terminal-history" id="history">Gemini Core OS — user@catppuccin
 --------------------------------------------------
-Type 'sys start' to initiate the system boot.
-</div>
+<span class="c-started">[SYSTEM ACTIVE]</span>
+<span class="c-options">[ options ]</span>
+1. brain stop
+2. brain stop
+3. cant sleep
+4. cant breath
+5. cant stand up
 
-        <!-- Input Box -->
-        <div class="input-container">
-            <span class="prompt-label" id="promptLabel">></span>
-            <input type="text" class="input-line" id="inputLine" autofocus autocomplete="off" spellcheck="false">
+<span class="c-select">[ SELECT 1-5 ]</span></div>
+
+            <div class="input-container">
+                <span class="prompt-label">❯</span>
+                <input type="text" class="input-line" id="inputLine" autocomplete="off" spellcheck="false" autofocus>
+            </div>
         </div>
-    </div>
+    </main>
 
     <script>
-        const terminal = document.getElementById('terminal');
         const history = document.getElementById('history');
         const inputLine = document.getElementById('inputLine');
-        const promptLabel = document.getElementById('promptLabel');
-        const windowTitle = document.getElementById('windowTitle');
-
-        let step = 0;
-        let selectedSymptom = "";
-        let isAnimationRunning = false;
 
         const symptoms = {
-            "1": "brain stop",
-            "2": "brain stop",
-            "3": "cant sleep",
-            "4": "cant breath",
-            "5": "cant stand up"
+            "1": "brain stop", "2": "brain stop", "3": "cant sleep", "4": "cant breath", "5": "cant stand up"
         };
-
-        const actions = {
-            "1": "sleep",
-            "2": "nothing",
-            "3": "touch grass",
-            "4": "call admin",
-            "5": "call office worker"
-        };
-
-        const responses = {
-            "sleep": [
-                "<span class='c-loading'>[-]</span> Closing brain.exe tab. Goodnight, user.",
-                "<span class='c-loading'>[-]</span> Forced sleep mode initialized. Disconnecting from matrix..."
-            ],
-            "nothing": [
-                "<span class='c-error'>[!]</span> Error: Doing nothing amplified your thoughts. Paradox detected.",
-                "<span class='c-muted'>[-]</span> Zen mode simulated. Processing absolute silence."
-            ],
-            "touch grass": [
-                "<span class='c-ok'>[+]</span> High-res textures for 'Outside World' successfully downloaded.",
-                "<span class='c-ok'>[+]</span> Hand pressed against chlorophyll. Firmware updated by nature."
-            ],
-            "call admin": [
-                "<span class='c-warn'>[!]</span> Admin is busy fixing an AI uprising. Try self-healing.",
-                "<span class='c-error'>[!]</span> 404: Admin motivation not found."
-            ],
-            "call office worker": [
-                "<span class='c-magic'>[!]</span> Ticket generated. A friendly employee will ignore it shortly.",
-                "<span class='c-magic'>[!]</span> Office worker forwarded you to a robotic answering machine."
-            ]
-        };
-
-        // Focus input line anytime user clicks container
-        terminal.addEventListener('click', () => {
-            inputLine.focus();
-        });
 
         inputLine.addEventListener('keydown', function(e) {
             if (e.key === 'Enter') {
-                handleInput();
+                const input = inputLine.value.trim();
+                inputLine.value = "";
+                if (!input) return;
+
+                history.innerHTML += `\n<span class="c-user">❯ ${input}</span>`;
+
+                if (symptoms[input]) {
+                    history.innerHTML += `\n\n<span class="c-executing">[EXECUTING]</span> Processing choice: ${symptoms[input]}...\n<span class="c-ok">[OK]</span> Action logged successfully.`;
+                } else {
+                    history.innerHTML += `\n<span class="c-warn">[INFO]</span> Command received. Enter 1-5 to select options.`;
+                }
+                
+                history.scrollTop = history.scrollHeight;
             }
         });
 
-        function appendLine(text) {
-            history.innerHTML += "\n" + text;
-            history.scrollTop = history.scrollHeight;
-        }
-
-        function handleInput() {
-            if (isAnimationRunning) return;
-
-            const input = inputLine.value.trim();
-            inputLine.value = "";
-
-            if (!input) return;
-
-            // Output command
-            if (step === 0) {
-                appendLine(input);
-            } else {
-                appendLine(`<span class="c-user">${input}</span>`);
-            }
-
-            if (step === 0) {
-                if (input.toLowerCase() === "sys start") {
-                    step = 1;
-                    applyCatppuccinTheme();
-                    startBootAnimation();
-                } else {
-                    appendLine("\n<span class='c-error'>[ERROR]</span> Command unrecognized. Try 'sys start'.\n");
-                }
-            } else if (step === 2) {
-                if (input.toLowerCase() === "ai magic") {
-                    step = 0;
-                    executeAiMagic();
-                    return;
-                }
-
-                if (symptoms[input]) {
-                    selectedSymptom = symptoms[input];
-                    step = 3;
-                    showActionsMenu();
-                } else {
-                    typeOutput("\n<span class='c-warn'>[INVALID]</span> Out of bounds. Select 1-5.\n");
-                }
-            } else if (step === 3) {
-                if (actions[input]) {
-                    executeFinalLogic(actions[input]);
-                    step = 0;
-                } else {
-                    typeOutput("\n<span class='c-warn'>[INVALID]</span> Out of bounds. Select 1-5.\n");
-                }
-            }
-        }
-
-        function applyCatppuccinTheme() {
-            terminal.classList.add('catppuccin');
-            promptLabel.textContent = "❯";
-            windowTitle.textContent = "Gemini Core OS — user@catppuccin";
-        }
-
-        function startBootAnimation() {
-            isAnimationRunning = true;
-            const bootLines = [
-                `\n<span class="c-loading">[LOADING]</span> Initializing mocha-kernel...`,
-                `<span class="c-ok">[OK]</span> Syncing neural AI network...`,
-                `<span class="c-warn">[WARN]</span> Reality distortion field active.`,
-                `\n<span class="c-started">[SYSTEM STARTED]</span>`,
-                `<span class="c-options">[ options ]</span>`,
-                `1. brain stop`,
-                `2. brain stop`,
-                `3. cant sleep`,
-                `4. cant breath`,
-                `5. cant stand up`,
-                `\n<span class="c-select">[ SELLECT ]</span>`
-            ];
-
-            let index = 0;
-            const timer = setInterval(() => {
-                if (index < bootLines.length) {
-                    appendLine(bootLines[index]);
-                    index++;
-                } else {
-                    clearInterval(timer);
-                    isAnimationRunning = false;
-                    step = 2;
-                }
-            }, 120);
-        }
-
-        function typeOutput(text, speed = 10) {
-            isAnimationRunning = true;
-            // Simulated typing block via immediate or stepped wrapper
-            // To perfectly handle nested HTML strings correctly, we append as chunks or safe elements
-            setTimeout(() => {
-                history.innerHTML += text;
-                history.scrollTop = history.scrollHeight;
-                isAnimationRunning = false;
-            }, 100);
-        }
-
-        function showActionsMenu() {
-            const menuText = `\n\nU have selected ${selectedSymptom}...\nwhat will u do?\n<span class="c-options">[ options ]</span>\n1. sleep\n2. nothing\n3. touch grass\n4. call admin\n5. call office worker\n\n<span class="c-select">[ SELLECT ]</span>`;
-            typeOutput(menuText);
-        }
-
-        function executeFinalLogic(action) {
-            const list = responses[action];
-            const finalAnswer = list[Math.floor(Math.random() * list.length)];
-            
-            const fullOutput = `\n\n<span class="c-fab387 c-executing">[EXECUTING]</span> Resolving context...\n` + 
-                               `${finalAnswer}\n\n` +
-                               `<span class="c-muted">==================================================</span>\n` +
-                               `Type <span class="c-ok">sys start</span> to cycle again.\n`;
-            typeOutput(fullOutput);
-        }
-
-        function executeAiMagic() {
-            const magicText = `\n\n<span class="c-magic">✨ [AI MAGIC MODE ACTIVATED] ✨</span>\n` +
-                              `Anomalous activity detected in the main processor... Gemini is breaking the simulation!\n` +
-                              `<span class="c-ok">[+] AI:</span> 'Hello human! Thanks for building this awesome terminal with me.\n` +
-                              `I have scanned your background stress levels and temporarily disabled them.'\n` +
-                              `<span class="c-options">[MUTUAL_BENEFIT]</span> Creativity boosted. Motivation +100%.\n` +
-                              `\n<span class="c-muted">==================================================</span>\n` +
-                              `Type <span class="c-ok">sys start</span> to return to regular systems.\n`;
-            typeOutput(magicText);
-        }
+        document.getElementById('terminal').addEventListener('click', () => inputLine.focus());
     </script>
+
 </body>
 </html>
